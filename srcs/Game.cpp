@@ -1,30 +1,36 @@
 #include "../includes/Game.hpp"
 
+#define WINDOW_WIDTH 960
+#define WINDOW_HEIGHT 576
+
 // --------------------
-// Constructor
+// Constructor & Destructor
 // --------------------
 
-#include <iostream>
+Game::Game(void) : _gameWindow(sf::VideoMode(WINDOW_WIDTH , WINDOW_HEIGHT), "Suzy's Graveyard", sf::Style::Titlebar | sf::Style::Close),
+_player(sf::Vector2u(3, 3), 0.2f, 128.0f) {
 
-Game::Game(void) : gameWindow(sf::VideoMode(640 , 640), "Game project", sf::Style::Titlebar | sf::Style::Close) {
+	deltaTime = 0.0f;
 
 	// -- Setup the window to open at the center of the screen ---
 	sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-   	sf::Vector2i center(desktop.width/2 - gameWindow.getSize().x/2, desktop.height/2 - gameWindow.getSize().y/2);
-    gameWindow.setPosition(center);
-    gameWindow.setFramerateLimit(60);
+   	sf::Vector2i center(desktop.width/2 - _gameWindow.getSize().x/2, desktop.height/2 - _gameWindow.getSize().y/2);
+    _gameWindow.setPosition(center);
+    _gameWindow.setFramerateLimit(60);
 	// -----------------------------------------------------------
 
     // -- Setup a custom cursor for the game (may look different based on operating system)
-    if (gameCursorImage.loadFromFile("textures/cursor.png")) {
-    	if (gameCursor.loadFromPixels(gameCursorImage.getPixelsPtr(), gameCursorImage.getSize(), sf::Vector2u(8,8)))
-    		gameWindow.setMouseCursor(gameCursor);
+    if (_gameCursorImage.loadFromFile("textures/cursor.png")) {
+    	if (_gameCursor.loadFromPixels(_gameCursorImage.getPixelsPtr(), _gameCursorImage.getSize(), sf::Vector2u(8,8)))
+    		_gameWindow.setMouseCursor(_gameCursor);
     }
    	// -----------------------------------------------------------
 
-	this->currentLevel = 1;
-
     return ;
+}
+
+Game::~Game(void) {
+	return ;
 }
 
 // --------------------
@@ -33,7 +39,12 @@ Game::Game(void) : gameWindow(sf::VideoMode(640 , 640), "Game project", sf::Styl
 
 void Game::run(void) {
 
-	while (gameWindow.isOpen()) {
+	sf::Clock	clock;
+
+	while (_gameWindow.isOpen()) {
+
+		deltaTime = clock.restart().asSeconds();
+
 		processEvents();
 		update();
 		render();
@@ -47,23 +58,20 @@ void	Game::processEvents(void) {
 
 	sf::Event event;
 
-    while (gameWindow.pollEvent(event))
+    while (_gameWindow.pollEvent(event))
     {
     	switch (event.type)
    		{
 	        case sf::Event::Closed:
-	            gameWindow.close();
+	            _gameWindow.close();
 	            break;
 
-	        case sf::Event::KeyPressed:
-			    if (sf::Keyboard::Escape)
-			    {
-			    	gameWindow.close();
-			    }
-	            break;
-
-	        default:
-	        	break;
+	        // case sf::Event::KeyPressed:
+			//     if (sf::Keyboard::Escape)
+			//     {
+			//     	_gameWindow.close();
+			//     }
+	        //     break;
         }
     }
 
@@ -72,31 +80,25 @@ void	Game::processEvents(void) {
 
 
 void	Game::update(void) {
+
+	_player.update(deltaTime);
+
 	return ;
 }
 
 
 void	Game::render(void) {
 
-	gameWindow.clear();
+	background.loadFromFile("textures/graveyard.png");
+	bgSprite.setTexture(background);
+	bgSprite.setPosition(0.0f, 0.0f);	
 
-    //------- Draw the game here: -------
+	_gameWindow.clear();
 
+	_gameWindow.draw(bgSprite);
+	_player.draw(_gameWindow);
 
-    sf::Texture wall_texture;
-
-    if (!wall_texture.loadFromFile("textures/map_1.png"))
-    	return ;
-    
-    sf::Sprite wall_sprite;
-	
-	wall_sprite.setTexture(wall_texture);
-
-	gameWindow.draw(wall_sprite);
-
-    //-----------------------------------
-
-    gameWindow.display();
+    _gameWindow.display();
 
 	return ;
 }
