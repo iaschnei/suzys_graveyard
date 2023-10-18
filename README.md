@@ -1,7 +1,7 @@
 # suzys_graveyard
 My first personal project out of 42, using C++ and SFML to make a small game !
 
-# ~Work in progress~
+# ~ Work in progress ~
 
 The finished game will feature a minigame allowing Suzy to collect small skulls to fill her graveyard.
 
